@@ -1,6 +1,6 @@
 # Miscellaneous Chisel IP
 
-Some very basic IP for everyday use, written in Chisel. Currently contains:
+Some very basic IP for everyday use, written in Chisel 3.0. Currently contains:
 
   * [DataWidthConverter][1]  
     Converts `UInt` of arbitrary bit width to `UInt` of different bit width.
