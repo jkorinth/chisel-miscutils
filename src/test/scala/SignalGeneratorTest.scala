@@ -1,37 +1,36 @@
 package chisel.miscutils
-import Chisel._
-import SignalGenerator._
-import org.scalatest.junit.JUnitSuite
-import org.junit.Test
-import org.junit.Assert._
+import  chisel3._
+import  chisel3.util._
+import  chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
+import  SignalGenerator._
 
 class SignalGeneratorComposition1 extends Module {
   val waveform: SignalGenerator.Waveform =
       (for (i <- 2 until 30) yield List((false, 5), (true, i))) reduce (_++_)
   val clock_sg = Module(new SignalGenerator(List((true, 2), (false, 2))))
   val test_sg  = Module(new SignalGenerator(waveform, true))
-  val io       = new Bundle { val v = Bool(OUTPUT) }
+  val io       = IO(new Bundle { val v = Output(Bool()) })
   test_sg.io.in := clock_sg.io.v
   io.v          := test_sg.io.v
 }
 
-class SignalGeneratorSuite extends JUnitSuite {
-  @Test def test1 {
+class SignalGeneratorSuite extends ChiselFlatSpec {
+  "test1" should "be ok" in {
     val waveform: SignalGenerator.Waveform =
         (for (i <- 2 until 30) yield List((false, 5), (true, i))) reduce (_++_)
-    chiselMainTest(Array("--genHarness", "--backend", "c", "--vcd", "--targetDir", "test/signalgenerator", "--compile", "--test"), () =>
-        Module(new SignalGenerator(waveform))
-      ) { m => new SignalGeneratorTest(m) }
+    Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/signalgenerator"),
+                   () => new SignalGenerator(waveform))
+      { m => new SignalGeneratorTest(m) }
   }
 
-  @Test def test2 { // same as test1, but with user supplied clock
-    chiselMainTest(Array("--genHarness", "--backend", "c", "--vcd", "--targetDir", "test/signalgenerator", "--compile", "--test"), () =>
-        Module(new SignalGeneratorComposition1)
-      ) { m => new SignalGeneratorComposition1Test(m) }
+  "test2" should "be ok" in { // same as test1, but with user supplied clock
+    Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/signalgenerator"),
+                   () => new SignalGeneratorComposition1)
+      { m => new SignalGeneratorComposition1Test(m) }
   }
 }
 
-class SignalGeneratorTest(sg: SignalGenerator) extends Tester(sg, false) {
+class SignalGeneratorTest(sg: SignalGenerator) extends PeekPokeTester(sg) {
   import scala.util.Properties.{lineSeparator => NL}
   private var cc = 0
 
@@ -54,20 +53,19 @@ class SignalGeneratorTest(sg: SignalGenerator) extends Tester(sg, false) {
     while(peek(s) > 0) step(1)
   }
 
-  // the actual test: wait until reset is off
-  waitForNegEdge(sg.reset)
+  reset(10)
 
   for (j <- 0 to 1) {
     for (i <- 2 until 30) {
       waitForPosEdge(sg.io.v)
       val cc_start = cc
       waitForNegEdge(sg.io.v)
-      assertTrue (cc - cc_start == i)
+      expect (cc - cc_start == i, "wrong number of clock cycles")
     }
   }
 }
 
-class SignalGeneratorComposition1Test(sg: SignalGeneratorComposition1) extends Tester(sg, false) {
+class SignalGeneratorComposition1Test(sg: SignalGeneratorComposition1) extends PeekPokeTester(sg) {
   private var cc = 0
 
   // re-define step to output progress info
@@ -89,15 +87,14 @@ class SignalGeneratorComposition1Test(sg: SignalGeneratorComposition1) extends T
     while(peek(s) > 0) step(1)
   }
 
-  // the actual test: wait until reset is off
-  waitForNegEdge(sg.reset)
+  reset(10)
 
   for (j <- 0 to 1) {
     for (i <- 2 until 30) {
       waitForPosEdge(sg.io.v)
       val cc_start = cc
       waitForNegEdge(sg.io.v)
-      assertTrue (cc - cc_start == i * 4)
+      expect (cc - cc_start == i * 4, "wrong number of clock cycles")
     }
   }
 }
