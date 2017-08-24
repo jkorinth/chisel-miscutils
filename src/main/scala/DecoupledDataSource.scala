@@ -22,9 +22,8 @@ class DecoupledDataSourceIO[T <: Data](gen: T) extends Bundle {
  **/
 class DecoupledDataSource[T <: Data](gen: T, val size : Int, val data: (Int) => T, val repeat: Boolean = true) extends Module {
 
-  println ("DecoupledDataSource: size = %d, repeat = %s".format(size, if (repeat) "true" else "false"))
-  println("  width = %d".format(log2Ceil(if (repeat) size else size + 1)))
-
+  println ("DecoupledDataSource: size = %d, repeat = %s, addrWidth = %d"
+    .format(size, if (repeat) "true" else "false", log2Ceil(if (repeat) size else size + 1)))
 
   val ds  = for (i <- 0 until size) yield data(i) // evaluate data to array
   val io  = IO(new DecoupledDataSourceIO(gen)) // interface
