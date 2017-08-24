@@ -20,7 +20,7 @@ class DecoupledDataSource_OutputCheck[T <: UInt](m: DecoupledDataSource[T], data
       if (! m.repeat)
         errors = "repeat is false, but index (%d) exceeds size(%d)".format(i, m.size) :: errors
     } else {
-      if (peek(m.io.out.bits) != m.data(i)) {
+      if (peek(m.io.out.bits) != data(i)) {
         errors = "output #%d: expected %d, found %d".format(i, data(i), peek(m.io.out.bits)) :: errors
       } else {
         // wait for random time up to 10 cycles

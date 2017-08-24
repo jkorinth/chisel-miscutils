@@ -2,11 +2,9 @@ name := "chisel-miscutils"
 
 organization := "esa.cs.tu-darmstadt.de"
 
-version := "0.2-SNAPSHOT"
+version := "0.3-SNAPSHOT"
 
-scalaVersion := "2.11.7"
-
-crossScalaVersions := Seq("2.10.3", "2.10.4", "2.11.0")
+scalaVersion := "2.11.11"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
@@ -21,8 +19,9 @@ libraryDependencies ++= (Seq("chisel3","chisel-iotesters").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "com.typesafe.play" %% "play-json" % "2.4.8"
+  "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
+  "com.typesafe.play" %% "play-json" % "2.6.3"
 )
 
 // no parallel tests
