@@ -57,7 +57,7 @@ class SignalGeneratorTest(sg: SignalGenerator) extends PeekPokeTester(sg) {
 
   for (j <- 0 to 1) {
     for (i <- 2 until 30) {
-      waitForPosEdge(sg.io.v)
+      //waitForPosEdge(sg.io.v)
       val cc_start = cc
       waitForNegEdge(sg.io.v)
       expect (cc - cc_start == i, "wrong number of clock cycles")

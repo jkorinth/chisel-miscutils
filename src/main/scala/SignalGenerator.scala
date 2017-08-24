@@ -2,18 +2,24 @@ package chisel.miscutils
 import  chisel3._
 import  chisel3.util._
 
-sealed case class Signal(value: Boolean, periods: Int = 1) extends Ordered[Signal] {
-  import scala.math.Ordered.orderingToOrdered
-  def compare(that: Signal): Int = periods compare that.periods
-}
-
 object SignalGenerator {
-  type Waveform = List[Signal]
+  sealed case class Signal(value: Boolean, periods: Int = 1) extends Ordered[Signal] {
+    import scala.math.Ordered.orderingToOrdered
+    def compare(that: Signal): Int = periods compare that.periods
+    def unary_! = this.copy(value = !value)
+  }
+  final case class Waveform(signals: Seq[Signal]) {
+    require (signals.length > 0, "waveform must not be empty")
+  }
+  implicit def waveformToSeq(w: Waveform): Seq[Signal] = w.signals
+  implicit def seqToWaveform(s: Seq[Signal]): Waveform = Waveform.apply(s)
+
   implicit def makeSignal(sd: (Boolean, Int)): Signal = Signal(sd._1, sd._2)
   implicit def makeWaveform(ls: List[(Boolean, Int)]): Waveform = ls map makeSignal
 }
 
-class SignalGenerator(signals: SignalGenerator.Waveform, useInputAsClock: Boolean = false) extends Module {
+class SignalGenerator(val signals: SignalGenerator.Waveform,
+                      val useInputAsClock: Boolean = false) extends Module {
   require (signals.length > 0, "Waveform must not be empty.")
   require (signals map (_.periods > 1) reduce (_&&_),
       "All signals must have at least two clock cycles length.")
@@ -29,7 +35,7 @@ class SignalGenerator(signals: SignalGenerator.Waveform, useInputAsClock: Boolea
   when (reset) {
     curr_idx := 0.U
     cnt      := cnts_rom(0)
-    vreg     := 0.U
+    vreg     := vals_rom(0)
   }
   .otherwise {
     vreg := vals_rom(curr_idx)

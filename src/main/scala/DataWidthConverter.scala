@@ -15,12 +15,9 @@ import  chisel3.util._
  * @param littleEndian if inWidth &gt; outWidth, determines
  *                     the order of the nibbles (low to high)
  **/
-class DataWidthConverter(
-    val inWidth: Int,
-    val outWidth: Int,
-    val littleEndian: Boolean = true
-  ) extends Module {
-
+class DataWidthConverter(val inWidth: Int,
+                         val outWidth: Int,
+                         val littleEndian: Boolean = true) extends Module {
   require (inWidth > 0, "inWidth must be > 0")
   require (outWidth > 0, "inWidth must be > 0")
   require (inWidth != outWidth, "inWidth (%d) must be different from outWidth (%d)"
