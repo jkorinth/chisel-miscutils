@@ -23,7 +23,7 @@ class CorrectnessHarness(inWidth: Int,
                          delay: Int = 10) extends Module {
   require (delay > 0, "delay bitwidth must be > 0")
   val io = IO(new Bundle {
-    val dly = Input(UInt(log2Ceil(delay).W))
+    val dly = Input(UInt(Seq(log2Ceil(delay), 1).max.W))
     val dsrc_out_valid = Output(Bool())
     val dsrc_out_bits = Output(UInt())
     val dwc_inq_valid = Output(Bool())

@@ -31,7 +31,7 @@ class MinimalDelayTester[T <: UInt](m: MinimalDelayHarness) extends PeekPokeTest
       if (peek(m.io.dsrc_out_valid) > 0 && peek(m.io.dwc_inq_ready) > 0) {
         val e = peek(m.io.dsrc_out_bits)
         expecteds = expecteds :+ e
-        println ("adding expected value: %d (%s)".format(e, toBinaryString(e, m.dwc.inWidth)))
+        //println ("adding expected value: %d (%s)".format(e, toBinaryString(e, m.dwc.inWidth)))
       }
 
       // check output element: must match head of expecteds
@@ -45,7 +45,7 @@ class MinimalDelayTester[T <: UInt](m: MinimalDelayHarness) extends PeekPokeTest
           expect(false, errmsg)
         } else {
           if (v == expecteds.head) {
-            println ("element #%d ok!".format(i))
+            //println ("element #%d ok!".format(i))
           } else  {
             val errmsg = "element #%d wrong: expected %d (%s), found %d (%s)".format(
                 i, expecteds.head, toBinaryString(expecteds.head, m.dwc.inWidth),

@@ -9,16 +9,16 @@ class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
   behavior of "DataWidthConverter"
 
   it should "preserve data integrity in arbitrary conversions" in
-    check(forAll(bitWidthGen(64), Arbitrary.arbitrary[Boolean], genLimited(1, 100)) {
+    check(forAll(bitWidthGen(64), Arbitrary.arbitrary[Boolean], genLimited(1, 15)) {
       case (inW, littleEndian, delay) =>
         forAll(conversionWidthGen(inW)) { outW =>
           println("Testing bitwidth conversion from %d bits -> %d bits (%s) with %d delay"
             .format(inW:Int, outW:Int, if (littleEndian) "little-endian" else "big-endian", delay:Int))
           Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/DataWidthConverter"),
-              () => new CorrectnessHarness(inW, outW, littleEndian, delay))
+              () => new CorrectnessHarness(inW, outW, littleEndian, 1))
             { m => new CorrectnessTester(m) }
         }
-      })
+      }, minSuccessful(25))
 
   it should "transfer data with minimal delays" in
     check(forAll(bitWidthGen(64), Arbitrary.arbitrary[Boolean]) { case (inW, littleEndian) =>
