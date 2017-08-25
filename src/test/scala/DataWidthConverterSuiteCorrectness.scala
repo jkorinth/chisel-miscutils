@@ -16,6 +16,7 @@ import  java.nio.file.Paths
  * varying speed of consumption.
  **/
 class DataWidthConverterHarness(inWidth: Int, outWidth: Int, littleEndian: Boolean, delay: Int = 10) extends Module {
+  require (delay > 0, "delay bitwidth must be > 0")
   val io = IO(new Bundle {
     val dly = Input(UInt(log2Ceil(delay).W))
     val dsrc_out_valid = Output(Bool())
