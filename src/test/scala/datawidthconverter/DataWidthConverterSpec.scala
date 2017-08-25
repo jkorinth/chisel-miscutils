@@ -18,7 +18,7 @@ class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
               () => new CorrectnessHarness(inW, outW, littleEndian, 1))
             { m => new CorrectnessTester(m) }
         }
-      }, minSuccessful(25))
+      }, minSuccessful(15))
 
   it should "transfer data with minimal delays" in
     check(forAll(bitWidthGen(64), Arbitrary.arbitrary[Boolean]) { case (inW, littleEndian) =>
@@ -29,5 +29,5 @@ class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
             () => new MinimalDelayHarness(inW, outW, littleEndian))
           { m => new MinimalDelayTester(m) }
       }
-    })
+    }, minSuccessful(15))
 }
