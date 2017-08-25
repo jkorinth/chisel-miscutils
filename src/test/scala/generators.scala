@@ -33,6 +33,12 @@ package object generators {
   type DataSize = Limited[Int]
   def dataSizeGen(max: Int = 1024): Gen[DataSize] = genLimited(1, max)
 
+  /** Generates bit width that is a integer ratio from the other. */
+  def conversionWidthGen(inW: BitWidth): Gen[BitWidth] = Gen.oneOf(
+    ((Stream.from(2) map (inW * _) takeWhile ((i: Int) => i <= inW.max)).toList ++
+     (Stream.from(2) map (inW / _) takeWhile ((i: Int) => i > 0) filter ((i: Int) => inW % i == 0)).toList).map(Limited(_, 1, 64))
+  )
+
   /** Generator for a DataWidthConverter test configuration consisting of 
    *  input bit width, output bit width and endianess flag. */
   def widthConversionGen(max: Int = 64): Gen[(BitWidth, BitWidth, Boolean)] = for {
