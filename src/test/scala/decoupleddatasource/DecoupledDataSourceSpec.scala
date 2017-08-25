@@ -1,4 +1,5 @@
-package chisel.miscutils
+package chisel.miscutils.decoupleddatasource
+import  chisel.miscutils._
 import  chisel3._
 import  chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 import  org.scalacheck._, org.scalacheck.Prop._

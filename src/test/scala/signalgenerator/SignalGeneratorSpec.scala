@@ -1,4 +1,5 @@
-package chisel.miscutils
+package chisel.miscutils.signalgenerators
+import  chisel.miscutils._
 import  generators._
 import  org.scalacheck._, org.scalacheck.Prop._
 import  org.scalatest.prop.Checkers
