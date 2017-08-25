@@ -6,37 +6,6 @@ import  org.scalatest.junit.JUnitSuite
 import  scala.math._
 import  java.nio.file.Paths
 
-class SlowQueue(width: Int, val delay: Int = 10) extends Module {
-  val io = IO(new Bundle {
-    val enq = Flipped(Decoupled(UInt(width.W)))
-    val deq = Decoupled(UInt(width.W))
-    val dly = Input(UInt(log2Ceil(delay).W))
-  })
-
-  val waiting :: ready :: Nil = Enum(2)
-  val state = RegInit(init = ready)
-
-  val wr = Reg(UInt(log2Ceil(delay).W))
-
-  io.deq.bits  := io.enq.bits
-  io.enq.ready := io.deq.ready && state === ready
-  io.deq.valid := io.enq.valid && state === ready
-
-  when (reset) {
-    state := ready
-  }
-  .otherwise {
-    when (state === ready && io.enq.ready && io.deq.valid) {
-      state := waiting
-      wr    := io.dly
-    }
-    when (state === waiting) {
-      wr := wr - 1.U
-      when (wr === 0.U) { state := ready }
-    }
-  }
-}
-
 /**
  * DataWidthConverterHarness: Correctness test harness.
  * A DecoupledDataSource with random data is connected to a pair
