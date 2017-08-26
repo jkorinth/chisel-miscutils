@@ -20,7 +20,8 @@ import  math.pow
 class CorrectnessHarness(inWidth: Int,
                          outWidth: Int,
                          littleEndian: Boolean,
-                         delay: Int = 10) extends Module {
+                         delay: Int = 10)
+                        (implicit logLevel: Logging.Level) extends Module {
   require (delay > 0, "delay bitwidth must be > 0")
   val io = IO(new Bundle {
     val dly = Input(UInt(Seq(log2Ceil(delay), 1).max.W))

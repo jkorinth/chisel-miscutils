@@ -2,7 +2,7 @@ name := "chisel-miscutils"
 
 organization := "esa.cs.tu-darmstadt.de"
 
-version := "0.3-SNAPSHOT"
+version := "0.4-SNAPSHOT"
 
 scalaVersion := "2.11.11"
 

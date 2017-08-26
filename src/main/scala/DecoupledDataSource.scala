@@ -20,10 +20,14 @@ class DecoupledDataSourceIO[T <: Data](gen: T) extends Bundle {
                  otherwise valid will go low after data was
 		 consumed.
  **/
-class DecoupledDataSource[T <: Data](gen: T, val size : Int, val data: (Int) => T, val repeat: Boolean = true) extends Module {
-
-  println ("DecoupledDataSource: size = %d, repeat = %s, addrWidth = %d"
-    .format(size, if (repeat) "true" else "false", log2Ceil(if (repeat) size else size + 1)))
+class DecoupledDataSource[T <: Data](gen: T,
+                                     val size : Int,
+                                     val data: (Int) => T,
+                                     val repeat: Boolean = true)
+                                    (implicit l: Logging.Level)
+    extends Module with Logging {
+  cinfo("size = %d, repeat = %s, addrWidth = %d".format(size,
+    if (repeat) "true" else "false", log2Ceil(if (repeat) size else size + 1)))
 
   val ds  = for (i <- 0 until size) yield data(i) // evaluate data to array
   val io  = IO(new DecoupledDataSourceIO(gen)) // interface

@@ -6,6 +6,7 @@ import  org.scalatest.prop.Checkers
 import  generators._
 
 class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
+  implicit val logLevel = Logging.Level.Warn
   behavior of "DataWidthConverter"
 
   it should "preserve data integrity in arbitrary conversions" in

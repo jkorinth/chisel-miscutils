@@ -15,7 +15,8 @@ import  math.pow
   **/
 class MinimalDelayHarness(val inWidth: Int,
                           val outWidth: Int,
-			  val littleEndian: Boolean) extends Module {
+			  val littleEndian: Boolean)
+                         (implicit l: Logging.Level) extends Module {
   val io = IO(new Bundle {
     val dsrc_out_valid = Output(Bool())
     val dsrc_out_bits = Output(UInt())

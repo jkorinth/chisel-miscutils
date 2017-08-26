@@ -36,6 +36,8 @@ class OutputCheck[T <: UInt](m: DecoupledDataSource[T], data: Int => Int) extend
 }
 
 class DecoupledDataSourceSpec extends ChiselFlatSpec with Checkers {
+  implicit val logLevel = Logging.Level.Warn
+
   behavior of "DecoupledDataSource"
 
   it should "generate random outputs correctly" in
