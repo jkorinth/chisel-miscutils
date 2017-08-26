@@ -39,9 +39,18 @@ class DecoupledDataSource[T <: Data](gen: T,
     i := 0.U
   }
   .otherwise {
-    if (repeat)
-      when (io.out.ready && io.out.valid) { i := i + 1.U }
-    else
-      when (io.out.ready && io.out.valid && i < size.U) { i := i + 1.U }
+    when (io.out.ready && io.out.valid) {
+      val next = if (repeat) {
+        if (math.pow(2, log2Ceil(size)).toInt == size) {
+          i + 1.U
+        } else {
+          Mux((i + 1.U) < size.U, i + 1.U, 0.U)
+        }
+      } else {
+        Mux(i < size.U, i + 1.U, i)
+      }
+      info(p"i = $i -> $next, bits = 0x${Hexadecimal(io.out.bits.asUInt())}")
+      i := next
+    }
   }
 }
