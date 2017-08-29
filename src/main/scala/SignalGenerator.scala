@@ -16,6 +16,11 @@ object SignalGenerator {
 
   implicit def makeSignal(sd: (Boolean, Int)): Signal = Signal(sd._1, sd._2)
   implicit def makeWaveform(ls: List[(Boolean, Int)]): Waveform = ls map makeSignal
+
+  class IO extends Bundle {
+    val v = Output(Bool())
+    val in = Input(Bool())
+  }
 }
 
 class SignalGenerator(val signals: SignalGenerator.Waveform,
@@ -23,7 +28,7 @@ class SignalGenerator(val signals: SignalGenerator.Waveform,
   require (signals.length > 0, "Waveform must not be empty.")
   require (signals map (_.periods > 1) reduce (_&&_),
       "All signals must have at least two clock cycles length.")
-  val io = IO(new Bundle { val v = Output(Bool()); val in = Input(Bool()) })
+  val io = IO(new SignalGenerator.IO)
   val cnts_rom = Vec(signals map (n => (n.periods - 1).U))
   val vals_rom = Vec(signals map (n => (n.value).B))
   val cnt      = Reg(UInt(log2Ceil(signals.max.periods).W))

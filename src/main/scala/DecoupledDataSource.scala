@@ -2,11 +2,13 @@ package chisel.miscutils
 import  chisel3._
 import  chisel3.util._
 
-/**
- * Interface for DecoupledDataSource.
- **/
-class DecoupledDataSourceIO[T <: Data](gen: T) extends Bundle {
-  val out = Decoupled(gen.cloneType)
+object DecoupledDataSource {
+  /**
+   * Interface for DecoupledDataSource.
+   **/
+  class IO[T <: Data](gen: T) extends Bundle {
+    val out = Decoupled(gen.cloneType)
+  }
 }
 
 /**
@@ -30,7 +32,7 @@ class DecoupledDataSource[T <: Data](gen: T,
     if (repeat) "true" else "false", log2Ceil(if (repeat) size else size + 1)))
 
   val ds  = for (i <- 0 until size) yield data(i) // evaluate data to array
-  val io  = IO(new DecoupledDataSourceIO(gen)) // interface
+  val io  = IO(new DecoupledDataSource.IO(gen)) // interface
   val i   = Reg(UInt(log2Ceil(if (repeat) size else size + 1).W)) // index
   val rom = Vec.tabulate(size)(n => ds(n)) // ROM with data
   io.out.bits  := rom(i) // current index data

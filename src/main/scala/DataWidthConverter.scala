@@ -2,6 +2,13 @@ package chisel.miscutils
 import  chisel3._
 import  chisel3.util._
 
+object DataWidthConverter {
+  class IO(inWidth: Int, outWidth: Int) extends Bundle {
+    val inq = Flipped(Decoupled(UInt(inWidth.W)))
+    val deq = Decoupled(UInt(outWidth.W))
+  }
+}
+
 /**
  * DataWidthConverter converts the data width of a Queue.
  * Output is provided via a Queue, with increased or decreased
@@ -17,7 +24,8 @@ import  chisel3.util._
  **/
 class DataWidthConverter(val inWidth: Int,
                          val outWidth: Int,
-                         val littleEndian: Boolean = true) extends Module {
+                         val littleEndian: Boolean = true)
+                        (implicit logLevel: Logging.Level) extends Module with Logging {
   require (inWidth > 0, "inWidth must be > 0")
   require (outWidth > 0, "inWidth must be > 0")
   require (inWidth != outWidth, "inWidth (%d) must be different from outWidth (%d)"
@@ -26,10 +34,9 @@ class DataWidthConverter(val inWidth: Int,
            "inWidth (%d) and outWidth (%d) must be integer multiples of each other"
              .format(inWidth, outWidth))
 
-  val io = IO(new Bundle {
-    val inq = Flipped(Decoupled(UInt(inWidth.W)))
-    val deq = Decoupled(UInt(outWidth.W))
-  })
+  cinfo(s"inWidth = $inWidth, outWidth = $outWidth, littleEndian = $littleEndian")
+
+  val io = IO(new DataWidthConverter.IO(inWidth, outWidth))
 
   val ratio: Int = if (inWidth > outWidth) inWidth / outWidth else outWidth / inWidth
   val d_w = if (inWidth > outWidth) inWidth else outWidth // data register width
