@@ -47,58 +47,46 @@ class DataWidthConverter(val inWidth: Int,
     upsize()
 
   private def upsize() = {
-    val i = Reg(UInt(log2Ceil(ratio + 1).W))
-    val d = Reg(UInt(outWidth.W))
+    val i = RegInit(UInt(log2Ceil(ratio + 1).W), init = ratio.U)
+    val d = RegInit(UInt(outWidth.W), 0.U)
 
-    io.inq.ready := !reset && (i =/= 0.U || (io.inq.valid && io.deq.ready))
+    io.inq.ready := i =/= 0.U || (io.inq.valid && io.deq.ready)
     io.deq.bits  := d
-    io.deq.valid := !reset && i === 0.U
+    io.deq.valid := i === 0.U
 
-    when (reset) {
-      i := ratio.U
-      d := 0.U
+    when (io.inq.ready && io.inq.valid) {
+      if (littleEndian)
+        d := Cat(io.inq.bits, d) >> inWidth.U
+      else
+        d := (d << inWidth.U) | io.inq.bits
+      i := i - 1.U
     }
-    .otherwise {
-      when (io.inq.ready && io.inq.valid) {
-        if (littleEndian)
-          d := Cat(io.inq.bits, d) >> inWidth.U
-        else
-          d := (d << inWidth.U) | io.inq.bits
-        i := i - 1.U
-      }
-      when (io.deq.valid && io.deq.ready) {
-        i := Mux(io.inq.valid, (ratio - 1).U, ratio.U)
-      }
+    when (io.deq.valid && io.deq.ready) {
+      i := Mux(io.inq.valid, (ratio - 1).U, ratio.U)
     }
   }
 
   private def downsize() = {
-    val i = Reg(UInt(log2Ceil(ratio + 1).W))
-    val d = Reg(UInt(inWidth.W))
+    val i = RegInit(UInt(log2Ceil(ratio + 1).W), init = 0.U)
+    val d = RegInit(UInt(inWidth.W), init = 0.U)
 
-    io.inq.ready := !reset && (i === 0.U || (i === 1.U && io.deq.ready))
+    io.inq.ready := i === 0.U || (i === 1.U && io.deq.ready)
+    io.deq.valid := i > 0.U
     if (littleEndian)
       io.deq.bits := d(outWidth - 1, 0)
     else
       io.deq.bits := d(inWidth - 1, inWidth - outWidth)
-    io.deq.valid := !reset && i > 0.U
 
-    when (reset) {
-      i := 0.U
-      d := 0.U
+    when (i > 0.U && io.deq.ready) {
+      if (littleEndian)
+        d := d >> outWidth.U
+      else
+        d := d << outWidth.U
+      i := i - 1.U
     }
-    .otherwise {
-      when (i > 0.U && io.deq.ready) {
-        if (littleEndian)
-          d := d >> outWidth.U
-        else
-          d := d << outWidth.U
-        i := i - 1.U
-      }
-      when (io.inq.ready && io.inq.valid) {
-        d := io.inq.bits
-        i := ratio.U
-      }
+    when (io.inq.ready && io.inq.valid) {
+      d := io.inq.bits
+      i := ratio.U
     }
   }
 }

@@ -15,7 +15,9 @@ class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
         forAll(conversionWidthGen(inW)) { outW =>
           println("Testing bitwidth conversion from %d bits -> %d bits (%s) with %d delay"
             .format(inW:Int, outW:Int, if (littleEndian) "little-endian" else "big-endian", delay:Int))
-          Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/DataWidthConverter"),
+          val end = if (littleEndian) "littleEndian" else "bigEndian"
+          val dir = s"in${inW:Int}out${outW:Int}${end}delay${delay:Int}"
+          Driver.execute(Array("--fint-write-vcd", "--target-dir", s"test/DataWidthConverter/$dir"),
               () => new CorrectnessHarness(inW, outW, littleEndian, 1))
             { m => new CorrectnessTester(m) }
         }
@@ -26,7 +28,9 @@ class DataWidthConverterSpec extends ChiselFlatSpec with Checkers {
       forAll(conversionWidthGen(inW)) { outW =>
         println("Testing bitwidth conversion from %d bits -> %d bits (%s)"
           .format(inW:Int, outW:Int, if (littleEndian) "little-endian" else "big-endian"))
-        Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/DataWidthConverter"),
+        val end = if (littleEndian) "littleEndian" else "bigEndian"
+        val dir = s"in${inW:Int}out${outW:Int}${end}delay0"
+        Driver.execute(Array("--fint-write-vcd", "--target-dir", s"test/DataWidthConverter/$dir"),
             () => new MinimalDelayHarness(inW, outW, littleEndian))
           { m => new MinimalDelayTester(m) }
       }

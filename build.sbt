@@ -32,3 +32,5 @@ testForkedParallel in Test := false
 
 scalacOptions ++= Seq("-language:implicitConversions", "-language:reflectiveCalls", "-deprecation", "-feature")
 
+cleanFiles += baseDirectory.value / "test"
+
