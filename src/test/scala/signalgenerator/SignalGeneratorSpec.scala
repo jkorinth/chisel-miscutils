@@ -10,9 +10,9 @@ import  scala.util.Random
 
 /** Connects a random clock signal generator to the main signal generator to test
  *  external clock port facilities.
- */
+ **/
 class SignalGeneratorWithClockInput(val signals: Waveform) extends Module {
-  val io = IO(new Bundle { val v = Output(Bool()); val clk = Output(Bool()) })
+  val io  = IO(new Bundle { val v = Output(Bool()); val clk = Output(Bool()) })
   val clw = 0 to signals.length * 2 map (i => Signal(i % 2 == 0, 2 + Random.nextInt().abs % 10))
   val clk = Module(new SignalGenerator(clw))
   val sgn = Module(new SignalGenerator(signals, true))
