@@ -44,8 +44,9 @@ class DecoupledDataSourceSpec extends ChiselFlatSpec with Checkers {
     check(forAll(bitWidthGen(64), dataSizeGen(1024), Arbitrary.arbitrary[Boolean]) { case (bw, sz, re) =>
       println("Testing DecoupledDataSource with %d entries of width %d %s"
         .format(bw:Int, sz:Int, if (re) "with repeat" else "without repeat"))
+      val dir = s"bw${bw:Int}sz${sz:Int}${if (re) "repeat" else "norepeat"}"
       val data = 0 until sz map (i => scala.util.Random.nextInt().abs % math.pow(2, bw:Int).toInt)
-      Driver.execute(Array("--fint-write-vcd", "--target-dir", "test/DecoupledDataSource"),
+      Driver.execute(Array("--fint-write-vcd", "--target-dir", s"test/DecoupledDataSource/$dir"),
           () => new DecoupledDataSource[UInt](0.U((bw:Int).W), sz, data map (_.U), re))
         { m => new OutputCheck(m, data) }
     }, minSuccessful(25))
