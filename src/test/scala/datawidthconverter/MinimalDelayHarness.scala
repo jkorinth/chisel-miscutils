@@ -38,7 +38,7 @@ class MinimalDelayHarness(val inWidth: Int,
   val dwc2 = Module(new DataWidthConverter(outWidth, inWidth, littleEndian))
   dwc.io.inq       <> dsrc.io.out
   dwc2.io.inq      <> dwc.io.deq
-  dwc2.io.deq.ready := !reset
+  dwc2.io.deq.ready := RegNext(true.B, init = false.B)
 
   // internal peek-and-poke does not work, need to wire as outputs:
   io.dsrc_out_valid := dsrc.io.out.valid

@@ -19,7 +19,7 @@ class OutputCheck[T <: UInt](m: DecoupledDataSource[T], data: Int => Int) extend
   reset(10)
   poke(m.io.out.ready, true)
   var i = 0
-  while (peek(m.io.out.valid) > 0 && i <= m.size) {
+  while (peek(m.io.out.valid) > 0 & i <= m.size) {
     if (i >= m.size) {
       expect(m.repeat, "repeat is false, but index (%d) exceeds size(%d)".format(i, m.size))// :: errors
     } else {

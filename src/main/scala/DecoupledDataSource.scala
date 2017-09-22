@@ -33,9 +33,9 @@ class DecoupledDataSource[T <: Data](gen: T,
   val rom = Vec.tabulate(size)(n => ds(n)) // ROM with data
 
   io.out.bits  := rom(i) // current index data
-  io.out.valid := i < size.U // valid until exceeded
+  io.out.valid := repeat.B | i < size.U // valid until exceeded
 
-  when (io.out.ready && io.out.valid) {
+  when (io.out.fire()) {
     val next = if (repeat) {
       if (math.pow(2, log2Ceil(size)).toInt == size)
         i + 1.U
