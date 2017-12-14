@@ -3,10 +3,10 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: bitbucketpipelines/scala-sbt:scala-2.12
+image: bitbucketpipelines/scala-sbt:scala-2.11
 
 pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - sbt test
+          - SBT_OPTS='-Xss16M' sbt test
